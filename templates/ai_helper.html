@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Study Helper | SmartLearn</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <script>
+    // Dynamically add subject fields
+    function addSubjectField() {
+      const container = document.getElementById("subjects");
+      const div = document.createElement("div");
+      div.classList.add("input-group", "mb-2");
+      div.innerHTML = `
+        <input class="form-control" name="subjects[]" placeholder="Subject Name" required>
+        <input class="form-control" type="number" name="marks[]" placeholder="Marks (0-100)" required min="0" max="100">
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
+      `;
+      container.appendChild(div);
+    }
+  </script>
+</head>
+
+<body class="bg-light">
+  <div class="container mt-5">
+    <div class="card shadow p-4 mx-auto" style="max-width: 650px;">
+      <h3 class="text-center text-primary mb-3">🤖 AI Study Helper</h3>
+      <p class="text-center text-muted">
+        Enter your subjects, marks, attendance, and assignments to predict performance.
+      </p>
+
+      <!-- Form -->
+      <form method="POST">
+        <div id="subjects">
+          <div class="input-group mb-2">
+            <input class="form-control" name="subjects[]" placeholder="Subject Name" required>
+            <input class="form-control" type="number" name="marks[]" placeholder="Marks (0-100)" required min="0" max="100">
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" onclick="addSubjectField()">➕ Add Subject</button>
+
+        <input class="form-control mb-2" name="attendance" placeholder="Attendance (%)" required type="number" min="0" max="100">
+        <input class="form-control mb-3" name="assignments_done" placeholder="Assignments Completed" required type="number" min="0">
+
+        <button class="btn btn-success w-100" type="submit">🔍 Predict Performance</button>
+      </form>
+
+      <!-- Result Section -->
+      {% if result %}
+      <div class="card mt-4 border-success shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="text-success fw-bold">🎯 Predicted Category: {{ result }}</h5>
+          <p><strong>💡 AI Suggestion:</strong> {{ suggestion }}</p>
+          <hr>
+          <p><strong>📊 Average Marks:</strong> {{ "%.2f"|format(avg_marks) }}%</p>
+          <p><strong>⚙️ Performance Score:</strong> {{ "%.2f"|format(score) }}</p>
+
+          <!-- 🔹 Progress Bar Visualization -->
+          <div class="progress mt-3" style="height: 25px;">
+            {% set progress_class = 'bg-success' if score >= 80 else 'bg-warning' if score >= 60 else 'bg-danger' %}
+            <div class="progress-bar {{ progress_class }}" 
+                 role="progressbar" 
+                 style="width: {{ score if score <= 100 else 100 }}%;" 
+                 aria-valuenow="{{ score }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+              {{ "%.0f"|format(score) }}%
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer class="text-center mt-4 text-muted">
+    <small>SmartLearn © 2025 | Powered by Flask + AI</small>
+  </footer>
+</body>
+</html>
